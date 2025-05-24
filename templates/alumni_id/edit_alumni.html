@@ -36,4 +36,50 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const collegeSelect = document.querySelector('select[data-college-select]');
+    const programSelect = document.querySelector('select[data-college-field]');
+    
+    if (!collegeSelect || !programSelect) return;
+
+    function updateProgramOptions() {
+        const selectedCollege = collegeSelect.value;
+        
+        // Store current selection if any
+        const currentSelection = programSelect.value;
+        
+        // Enable/disable all program options based on college
+        Array.from(programSelect.options).forEach(option => {
+            if (option.value === '') return; // Skip empty option
+            
+            const collegeId = programSelect.getAttribute(`data-college-${option.value}`);
+            const shouldShow = !selectedCollege || collegeId === selectedCollege;
+            
+            option.disabled = !shouldShow;
+            option.style.display = shouldShow ? '' : 'none';
+            
+            // If this option is selected but shouldn't be shown, deselect it
+            if (option.selected && !shouldShow) {
+                option.selected = false;
+            }
+        });
+        
+        // If no option is selected, select the first available option
+        if (!Array.from(programSelect.options).some(opt => opt.selected)) {
+            programSelect.value = '';
+        }
+        
+        // Enable/disable the entire program select based on college selection
+        programSelect.disabled = !selectedCollege;
+    }
+    
+    // Initialize program options
+    updateProgramOptions();
+    
+    // Update program options when college changes
+    collegeSelect.addEventListener('change', updateProgramOptions);
+});
+</script>
 {% endblock %} 

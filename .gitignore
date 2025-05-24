@@ -26,8 +26,12 @@ wheels/
 *.pyc
 db.sqlite3
 media/
-static/
+staticfiles/  # Django collected static files
+.static_root/
+static_cdn/
 
+
+staticfiles
 # Virtual Environment
 venv/
 ENV/
@@ -83,5 +87,16 @@ coverage.xml
 .env
 .env.local
 .env.*.local 
+
+# Node modules (if using any JavaScript build tools)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Compiled static files
+*.css.map
+*.js.map
+.sass-cache/
 
 prompt.txt
