@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Alumni - {{ alumni.first_name }} {{ alumni.last_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h2 class="mb-0">Confirm Deletion</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">Warning!</h4>
+                    <p>You are about to delete the following alumni record:</p>
+                    <ul>
+                        <li><strong>Name:</strong> {{ alumni.first_name }} {{ alumni.last_name }}</li>
+                        <li><strong>School ID:</strong> {{ alumni.school_id }}</li>
+                        <li><strong>Year Graduated:</strong> {{ alumni.year_graduated }}</li>
+                    </ul>
+                    <p class="mb-0">This action cannot be undone!</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="confirmation_id" class="form-label">
+                            Please enter the School ID ({{ alumni.school_id }}) to confirm deletion:
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="confirmation_id" 
+                               name="confirmation_id" 
+                               required 
+                               placeholder="Enter School ID to confirm">
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'alumni_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Delete Alumni</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

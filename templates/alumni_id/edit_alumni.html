@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Alumni - {{ alumni.first_name }} {{ alumni.last_name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Edit Alumni Profile</h2>
+                <a href="{% url 'alumni_list' %}" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            {% if alumni.photo %}
+                            <img src="{{ alumni.photo.url }}" alt="Current photo" class="img-fluid rounded">
+                            <p class="text-muted mt-2 small">Current photo</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            {{ form|crispy }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'alumni_list' %}" class="btn btn-secondary me-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -12,6 +12,18 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col">
+        <form method="get" class="d-flex">
+            <input type="search" name="search" class="form-control me-2" placeholder="Search by ID, name, email, or company..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+            {% if search_query %}
+                <a href="{% url 'alumni_list' %}" class="btn btn-outline-secondary ms-2">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
 <div class="table-responsive">
     <table class="table table-striped">
         <thead>
@@ -46,6 +58,8 @@
                 </td>
                 <td>
                     <a href="{% url 'view_id_card' alumnus.id %}" class="btn btn-sm btn-primary">View ID Card</a>
+                    <a href="{% url 'edit_alumni' alumnus.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                    <a href="{% url 'delete_alumni' alumnus.id %}" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
             {% empty %}
