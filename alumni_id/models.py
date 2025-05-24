@@ -12,10 +12,37 @@ class IDBackground(models.Model):
     def __str__(self):
         return self.name
 
+class College(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+class Program(models.Model):
+    code = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=100)
+    college = models.ForeignKey(College, on_delete=models.CASCADE, related_name='programs')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.college.code})"
+
+    class Meta:
+        ordering = ['college', 'name']
+
 class AlumniProfile(models.Model):
     school_id = models.CharField(max_length=20, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    college = models.ForeignKey(College, on_delete=models.PROTECT, null=True, blank=True)
+    program = models.ForeignKey(Program, on_delete=models.PROTECT, null=True, blank=True)
     year_graduated = models.IntegerField()
     company = models.CharField(max_length=200, blank=True)
     validity_start = models.DateField()

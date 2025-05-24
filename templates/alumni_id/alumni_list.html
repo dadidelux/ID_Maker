@@ -12,14 +12,63 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col">
-        <form method="get" class="d-flex">
-            <input type="search" name="search" class="form-control me-2" placeholder="Search by ID, name, email, or company..." value="{{ search_query }}">
-            <button type="submit" class="btn btn-outline-primary">Search</button>
-            {% if search_query %}
-                <a href="{% url 'alumni_list' %}" class="btn btn-outline-secondary ms-2">Clear</a>
-            {% endif %}
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3" id="filterForm">
+            <!-- Search Bar -->
+            <div class="col-md-12 mb-3">
+                <div class="input-group">
+                    <input type="search" name="search" class="form-control" placeholder="Search by ID, name, email, or company..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    {% if search_query or selected_year or selected_college or selected_program %}
+                        <a href="{% url 'alumni_list' %}" class="btn btn-outline-secondary">Clear All</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="col-md-4">
+                <label for="year" class="form-label">Year Graduated</label>
+                <select name="year" id="year" class="form-select">
+                    <option value="">All Years</option>
+                    {% for year in years %}
+                        <option value="{{ year }}" {% if selected_year|stringformat:"s" == year|stringformat:"s" %}selected{% endif %}>
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="college" class="form-label">College</label>
+                <select name="college" id="college" class="form-select">
+                    <option value="">All Colleges</option>
+                    {% for college in colleges %}
+                        <option value="{{ college.id }}" {% if selected_college|stringformat:"s" == college.id|stringformat:"s" %}selected{% endif %}>
+                            {{ college.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label for="program" class="form-label">Program</label>
+                <select name="program" id="program" class="form-select">
+                    <option value="">All Programs</option>
+                    {% for program in programs %}
+                        <option value="{{ program.id }}" 
+                                data-college="{{ program.college.id }}"
+                                {% if selected_program|stringformat:"s" == program.id|stringformat:"s" %}selected{% endif %}
+                                class="program-option">
+                            {{ program.name }} ({{ program.college.code }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
         </form>
     </div>
 </div>
@@ -30,10 +79,10 @@
             <tr>
                 <th>School ID</th>
                 <th>Name</th>
+                <th>College</th>
+                <th>Program</th>
                 <th>Year Graduated</th>
-                <th>Company</th>
-                <th>Contact</th>
-                <th>ID Validity</th>
+                <th>Email</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -42,20 +91,10 @@
             <tr>
                 <td>{{ alumnus.school_id }}</td>
                 <td>{{ alumnus.first_name }} {{ alumnus.last_name }}</td>
+                <td>{{ alumnus.college.name }}</td>
+                <td>{{ alumnus.program.name }}</td>
                 <td>{{ alumnus.year_graduated }}</td>
-                <td>{{ alumnus.company|default:"-" }}</td>
-                <td>
-                    <small>
-                        {{ alumnus.contact_number }}<br>
-                        {{ alumnus.email }}
-                    </small>
-                </td>
-                <td>
-                    <small>
-                        From: {{ alumnus.validity_start|date:"M d, Y" }}<br>
-                        To: {{ alumnus.validity_end|date:"M d, Y" }}
-                    </small>
-                </td>
+                <td>{{ alumnus.email }}</td>
                 <td>
                     <a href="{% url 'view_id_card' alumnus.id %}" class="btn btn-sm btn-primary">View ID Card</a>
                     <a href="{% url 'edit_alumni' alumnus.id %}" class="btn btn-sm btn-secondary">Edit</a>
@@ -64,12 +103,45 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7" class="text-center">
-                    No alumni registered yet. <a href="{% url 'register_alumni' %}">Register one now</a>!
-                </td>
+                <td colspan="7" class="text-center">No alumni found.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const collegeSelect = document.getElementById('college');
+    const programSelect = document.getElementById('program');
+    const programOptions = document.getElementsByClassName('program-option');
+    
+    // Function to update program options based on selected college
+    function updateProgramOptions() {
+        const selectedCollege = collegeSelect.value;
+        let visibleOptionsCount = 0;
+        
+        for (let option of programOptions) {
+            if (!selectedCollege || option.getAttribute('data-college') === selectedCollege) {
+                option.style.display = '';
+                visibleOptionsCount++;
+            } else {
+                option.style.display = 'none';
+                if (option.selected) {
+                    programSelect.value = ''; // Reset program selection if it's now hidden
+                }
+            }
+        }
+        
+        // Update the program select's disabled state
+        programSelect.disabled = visibleOptionsCount === 0;
+    }
+    
+    // Initialize program options on page load
+    updateProgramOptions();
+    
+    // Update program options when college selection changes
+    collegeSelect.addEventListener('change', updateProgramOptions);
+});
+</script>
 {% endblock %} 

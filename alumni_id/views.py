@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from .models import IDBackground, AlumniProfile
+from .models import IDBackground, AlumniProfile, College, Program
 from .forms import IDBackgroundForm, AlumniProfileForm
 from .utils import generate_id_card
 from django.db import models
@@ -45,8 +45,13 @@ def register_alumni(request):
 @login_required
 def alumni_list(request):
     search_query = request.GET.get('search', '')
+    year_filter = request.GET.get('year', '')
+    college_filter = request.GET.get('college', '')
+    program_filter = request.GET.get('program', '')
+    
     alumni = AlumniProfile.objects.all()
     
+    # Apply filters
     if search_query:
         alumni = alumni.filter(
             models.Q(school_id__icontains=search_query) |
@@ -56,9 +61,29 @@ def alumni_list(request):
             models.Q(company__icontains=search_query)
         )
     
+    if year_filter:
+        alumni = alumni.filter(year_graduated=year_filter)
+    
+    if college_filter:
+        alumni = alumni.filter(college_id=college_filter)
+    
+    if program_filter:
+        alumni = alumni.filter(program_id=program_filter)
+    
+    # Get unique years for the filter dropdown
+    years = AlumniProfile.objects.values_list('year_graduated', flat=True).distinct().order_by('-year_graduated')
+    colleges = College.objects.all().order_by('name')
+    programs = Program.objects.all().order_by('college__name', 'name')
+    
     return render(request, 'alumni_id/alumni_list.html', {
         'alumni': alumni,
-        'search_query': search_query
+        'search_query': search_query,
+        'years': years,
+        'colleges': colleges,
+        'programs': programs,
+        'selected_year': year_filter,
+        'selected_college': college_filter,
+        'selected_program': program_filter,
     })
 
 @login_required
