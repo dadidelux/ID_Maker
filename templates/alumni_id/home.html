@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="display-4 mb-4">Welcome to Alumni ID Maker</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Upload ID Background</h5>
+                    <p class="card-text">Upload and manage ID background templates for alumni cards.</p>
+                    <a href="{% url 'upload_background' %}" class="btn btn-primary">Upload Background</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Register Alumni</h5>
+                    <p class="card-text">Register new alumni and create their ID cards.</p>
+                    <a href="{% url 'register_alumni' %}" class="btn btn-primary">Register Alumni</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

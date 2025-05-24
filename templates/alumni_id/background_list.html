@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}ID Backgrounds{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>ID Backgrounds</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'upload_background' %}" class="btn btn-primary">Upload New Background</a>
+    </div>
+</div>
+
+<div class="row">
+    {% for background in backgrounds %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ background.image.url }}" class="card-img-top" alt="{{ background.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ background.name }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">Uploaded on {{ background.created_at|date:"F d, Y" }}</small>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <div class="alert alert-info">
+            No ID backgrounds uploaded yet. <a href="{% url 'upload_background' %}">Upload one now</a>!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
