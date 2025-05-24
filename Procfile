@@ -1,0 +1,1 @@
+web: gunicorn ID_Maker.wsgi:application --log-file - 
